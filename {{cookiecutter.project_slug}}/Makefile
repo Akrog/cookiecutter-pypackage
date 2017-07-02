@@ -82,11 +82,11 @@ servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
 register: ## register package in pypi
-       python setup.py register
+	python setup.py register --repository pypi
 
 release: clean ## package and upload a release
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist upload --repository pypi
+	python setup.py bdist_wheel upload --repository pypi
 
 dist: clean ## builds source and wheel package
 	python setup.py sdist
