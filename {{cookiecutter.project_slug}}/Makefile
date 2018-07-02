@@ -26,7 +26,7 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
+clean: clean-build clean-pyc ## remove all build, coverage and Python artifacts
 
 
 clean-build: ## remove build artifacts
@@ -81,16 +81,19 @@ docs: ## generate Sphinx HTML documentation, including API docs
 servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
-register: ## register package in pypi
-	python setup.py register --repository pypi
+test-package:
+	python setup.py check -r -s
+
+test-release: clean
+	python setup.py sdist bdist_wheel
+	twine upload -r pypitest dist/*
 
 release: clean ## package and upload a release
-	python setup.py sdist upload --repository pypi
-	python setup.py bdist_wheel upload --repository pypi
+	python setup.py sdist bdist_wheel
+	twine upload -r pypi dist/*
 
 dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
+	python setup.py sdist bdist_wheel
 	ls -l dist
 
 install: clean ## install the package to the active Python's site-packages
